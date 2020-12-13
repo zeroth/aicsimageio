@@ -852,16 +852,20 @@ class LifReader(Reader):
         chs = img.findall(".//ChannelDescription")
         chs_details = img.findall(".//WideFieldChannelInfo")
         for ch in chs:
-            ch_detail = next(
-                x for x in chs_details if x.attrib["LUT"] == ch.attrib["LUTName"]
-            )
-            scene_channel_list.append(
-                (
-                    f"{ch_detail.attrib['LUT']}"
-                    f"--{ch_detail.attrib['ContrastingMethodName']}"
-                    f"--{ch_detail.attrib['FluoCubeName']}"
+            if chs_details:
+                ch_detail = next(
+                    x for x in chs_details if x.attrib["LUT"] == ch.attrib["LUTName"]
                 )
-            )
+                scene_channel_list.append(
+                    (
+                        f"{ch_detail.attrib['LUT']}"
+                        f"--{ch_detail.attrib['ContrastingMethodName']}"
+                        f"--{ch_detail.attrib['FluoCubeName']}"
+                    )
+                )
+            else:
+                scene_channel_list.append(f"{ch.attrib['LUTName']}")
+            
         return scene_channel_list
 
     def get_physical_pixel_size(self, scene: int = 0) -> Tuple[float]:
